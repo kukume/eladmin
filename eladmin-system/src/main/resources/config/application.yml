@@ -1,0 +1,59 @@
+server:
+  port: 8000
+
+spring:
+  freemarker:
+    check-template-location: false
+  profiles:
+    active: dev
+  jackson:
+    time-zone: GMT+8
+  data:
+    redis:
+      repositories:
+        enabled: false
+      database: ${REDIS_DB:0}
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PWD:}
+      #连接超时时间
+      timeout: 5000
+  #  pid:
+  #    file: /自行指定位置/eladmin.pid
+
+  #配置 Jpa
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+
+task:
+  pool:
+    # 核心线程池大小
+    core-pool-size: 10
+    # 最大线程数
+    max-pool-size: 30
+    # 活跃时间
+    keep-alive-seconds: 60
+    # 队列容量
+    queue-capacity: 50
+
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: satoken
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: true
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
+  jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+
+rsa:
+  private_key: MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEA0vfvyTdGJkdbHkB8mp0f3FE0GYP3AYPaJF7jUd1M0XxFSE2ceK3k2kw20YvQ09NJKk+OMjWQl9WitG9pB6tSCQIDAQABAkA2SimBrWC2/wvauBuYqjCFwLvYiRYqZKThUS3MZlebXJiLB+Ue/gUifAAKIg1avttUZsHBHrop4qfJCwAI0+YRAiEA+W3NK/RaXtnRqmoUUkb59zsZUBLpvZgQPfj1MhyHDz0CIQDYhsAhPJ3mgS64NbUZmGWuuNKp5coY2GIj/zYDMJp6vQIgUueLFXv/eZ1ekgz2Oi67MNCk5jeTF2BurZqNLR3MSmUCIFT3Q6uHMtsB9Eha4u7hS31tj1UWE+D+ADzp59MGnoftAiBeHT7gDMuqeJHPL4b+kC+gzV4FGTfhR9q3tTbklZkD2A==
