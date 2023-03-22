@@ -1,0 +1,8 @@
+# 项目排除路径
+/.gradle/
+/eladmin-common/build/
+/eladmin-common/build/classes/java/main/
+/eladmin-logging/build/
+/eladmin-logging/build/classes/java/main/
+/eladmin-system/build/
+/eladmin-system/build/classes/java/main/
