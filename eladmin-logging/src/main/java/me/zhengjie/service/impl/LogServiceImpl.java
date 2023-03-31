@@ -88,7 +88,7 @@ public class LogServiceImpl implements LogService {
         log.setDescription(aopLog.value());
 
         log.setRequestIp(ip);
-        log.setAddress("");
+        log.setAddress("暂不支持");
         log.setMethod(methodName);
         log.setUsername(username);
         log.setParams(getParameter(method, joinPoint.getArgs()));

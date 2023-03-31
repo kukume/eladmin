@@ -137,16 +137,16 @@
 //        };
 //    }
 //
-//    @ApiModel
+//    
 //    @Data
 //    private static class Page {
-//        @ApiModelProperty("页码 (0..N)")
+//        
 //        private Integer page;
 //
-//        @ApiModelProperty("每页显示的数目")
+//        
 //        private Integer size;
 //
-//        @ApiModelProperty("以下列格式排序标准：property[,asc | desc]。 默认排序顺序为升序。 支持多种排序条件：如：id,asc")
+//        
 //        private List<String> sort;
 //    }
 //}

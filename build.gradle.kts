@@ -48,9 +48,9 @@ subprojects {
         implementation("com.alibaba:druid-spring-boot-starter:1.2.16")
         implementation("com.querydsl:querydsl-core:5.0.0")
         implementation("com.querydsl:querydsl-jpa:5.0.0:jakarta")
-        implementation("io.springfox:springfox-boot-starter:3.0.0")
         implementation("cn.dev33:sa-token-spring-boot3-starter:1.34.0")
         implementation("cn.dev33:sa-token-jwt:1.34.0")
+        implementation("cn.dev33:sa-token-dao-redis-jackson:1.34.0")
         implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
         implementation("org.netbeans.external:com-jcraft-jsch:RELEASE170")
         implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -62,6 +62,8 @@ subprojects {
         testImplementation("org.springframework.boot:spring-boot-starter-test")
 //        implementation("com.h2database:h2:2.1.214")
         implementation("com.mysql:mysql-connector-j:8.0.32")
+//        implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta")
+        implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.15.0-rc1")
     }
 
     tasks.test {

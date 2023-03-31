@@ -1,8 +1,10 @@
 package me.zhengjie.modules.security.service;
 
+import cn.dev33.satoken.config.SaTokenConfig;
 import kotlin.text.StringsKt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kuku.utils.StringUtils;
 import me.zhengjie.modules.security.service.dto.OnlineUserDto;
 import me.zhengjie.modules.system.domain.User;
 import me.zhengjie.utils.*;
@@ -20,21 +22,22 @@ import java.util.*;
 public class OnlineUserService {
 
     private final RedisUtils redisUtils;
+    private final SaTokenConfig saTokenConfig;
 
     private final String onlineKey = "online-token-";
 
     public void save(User user, String token, HttpServletRequest request){
         String dept = user.getDept().getName();
-        String ip = "";
-        String browser = "";
-        String address = "";
+        String ip = SpringUtilsKt.ip(request);
+        String browser = SpringUtilsKt.userAgent(request);
+        String address = "暂不支持";
         OnlineUserDto onlineUserDto = null;
         try {
             onlineUserDto = new OnlineUserDto(user.getUsername(), user.getNickName(), dept, browser , ip, address, EncryptUtils.desEncrypt(token), new Date());
         } catch (Exception e) {
             log.error(e.getMessage(),e);
         }
-        redisUtils.set(onlineKey + token, onlineUserDto, 1000 / 1000);
+        redisUtils.set(onlineKey + token, onlineUserDto, saTokenConfig.getTimeout());
     }
 
     /**
@@ -62,7 +65,7 @@ public class OnlineUserService {
         List<OnlineUserDto> onlineUserDtos = new ArrayList<>();
         for (String key : keys) {
             OnlineUserDto onlineUserDto = (OnlineUserDto) redisUtils.get(key);
-            if(!StringsKt.isBlank(filter)){
+            if(!StringUtils.isEmpty(filter)){
                 if(onlineUserDto.toString().contains(filter)){
                     onlineUserDtos.add(onlineUserDto);
                 }

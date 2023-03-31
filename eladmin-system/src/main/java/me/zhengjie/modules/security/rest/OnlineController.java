@@ -15,8 +15,6 @@
  */
 package me.zhengjie.modules.security.rest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.modules.security.service.OnlineUserService;
 import me.zhengjie.utils.EncryptUtils;
@@ -34,24 +32,24 @@ import java.util.Set;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth/online")
-@Api(tags = "系统：在线用户管理")
+
 public class OnlineController {
 
     private final OnlineUserService onlineUserService;
 
-    @ApiOperation("查询在线用户")
+
     @GetMapping
     public ResponseEntity<Object> queryOnlineUser(String filter, Pageable pageable){
         return new ResponseEntity<>(onlineUserService.getAll(filter, pageable),HttpStatus.OK);
     }
 
-    @ApiOperation("导出数据")
+
     @GetMapping(value = "/download")
     public void exportOnlineUser(HttpServletResponse response, String filter) throws IOException {
         onlineUserService.download(onlineUserService.getAll(filter), response);
     }
 
-    @ApiOperation("踢出用户")
+
     @DeleteMapping
     public ResponseEntity<Object> deleteOnlineUser(@RequestBody Set<String> keys) throws Exception {
         for (String key : keys) {

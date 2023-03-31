@@ -15,7 +15,7 @@
  */
 package me.zhengjie.base;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,7 +27,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 /**
  * 通用字段， is_del 根据需求自行添加
@@ -42,23 +42,21 @@ public class BaseEntity implements Serializable {
 
     @CreatedBy
     @Column(name = "create_by", updatable = false)
-    @ApiModelProperty(value = "创建人", hidden = true)
     private String createBy;
 
     @LastModifiedBy
     @Column(name = "update_by")
-    @ApiModelProperty(value = "更新人", hidden = true)
     private String updateBy;
 
     @CreationTimestamp
     @Column(name = "create_time", updatable = false)
-    @ApiModelProperty(value = "创建时间", hidden = true)
-    private Timestamp createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     @UpdateTimestamp
     @Column(name = "update_time")
-    @ApiModelProperty(value = "更新时间", hidden = true)
-    private Timestamp updateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
 
     /* 分组校验 */
     public @interface Create {}

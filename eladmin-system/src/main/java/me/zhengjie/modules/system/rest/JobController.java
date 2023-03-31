@@ -15,8 +15,6 @@
  */
 package me.zhengjie.modules.system.rest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.exception.BadRequestException;
@@ -39,31 +37,31 @@ import java.util.Set;
 */
 @RestController
 @RequiredArgsConstructor
-@Api(tags = "系统：岗位管理")
+
 @RequestMapping("/api/job")
 public class JobController {
 
     private final JobService jobService;
     private static final String ENTITY_NAME = "job";
 
-    @ApiOperation("导出岗位数据")
+
     @GetMapping(value = "/download")
-    
+
     public void exportJob(HttpServletResponse response, JobQueryCriteria criteria) throws IOException {
         jobService.download(jobService.queryAll(criteria), response);
     }
 
-    @ApiOperation("查询岗位")
+
     @GetMapping
-    
+
     public ResponseEntity<Object> queryJob(JobQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(jobService.queryAll(criteria, pageable),HttpStatus.OK);
     }
 
     @Log("新增岗位")
-    @ApiOperation("新增岗位")
+
     @PostMapping
-    
+
     public ResponseEntity<Object> createJob(@Validated @RequestBody Job resources){
         if (resources.getId() != null) {
             throw new BadRequestException("A new "+ ENTITY_NAME +" cannot already have an ID");
@@ -73,18 +71,18 @@ public class JobController {
     }
 
     @Log("修改岗位")
-    @ApiOperation("修改岗位")
+
     @PutMapping
-    
+
     public ResponseEntity<Object> updateJob(@Validated(Job.Update.class) @RequestBody Job resources){
         jobService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Log("删除岗位")
-    @ApiOperation("删除岗位")
+
     @DeleteMapping
-    
+
     public ResponseEntity<Object> deleteJob(@RequestBody Set<Long> ids){
         // 验证是否被用户关联
         jobService.verification(ids);

@@ -15,8 +15,8 @@
  */
 package me.zhengjie.modules.quartz.rest;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.annotation.Log;
@@ -34,46 +34,42 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Set;
 
-/**
- * @author Zheng Jie
- * @date 2019-01-07
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/jobs")
-@Api(tags = "系统:定时任务管理")
+@Tag(name = "系统:定时任务管理")
 public class QuartzJobController {
 
     private static final String ENTITY_NAME = "quartzJob";
     private final QuartzJobService quartzJobService;
 
-    @ApiOperation("查询定时任务")
+    @Operation(summary = "查询定时任务")
     @GetMapping
     public ResponseEntity<Object> queryQuartzJob(JobQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(quartzJobService.queryAll(criteria,pageable), HttpStatus.OK);
     }
 
-    @ApiOperation("导出任务数据")
+
     @GetMapping(value = "/download")
     public void exportQuartzJob(HttpServletResponse response, JobQueryCriteria criteria) throws IOException {
         quartzJobService.download(quartzJobService.queryAll(criteria), response);
     }
 
-    @ApiOperation("导出日志数据")
+
     @GetMapping(value = "/logs/download")
     public void exportQuartzJobLog(HttpServletResponse response, JobQueryCriteria criteria) throws IOException {
         quartzJobService.downloadLog(quartzJobService.queryAllLog(criteria), response);
     }
 
-    @ApiOperation("查询任务执行日志")
+
     @GetMapping(value = "/logs")
     public ResponseEntity<Object> queryQuartzJobLog(JobQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(quartzJobService.queryAllLog(criteria,pageable), HttpStatus.OK);
     }
 
     @Log("新增定时任务")
-    @ApiOperation("新增定时任务")
+
     @PostMapping
     public ResponseEntity<Object> createQuartzJob(@Validated @RequestBody QuartzJob resources){
         if (resources.getId() != null) {
@@ -86,7 +82,7 @@ public class QuartzJobController {
     }
 
     @Log("修改定时任务")
-    @ApiOperation("修改定时任务")
+
     @PutMapping
     public ResponseEntity<Object> updateQuartzJob(@Validated(QuartzJob.Update.class) @RequestBody QuartzJob resources){
         // 验证Bean是不是合法的，合法的定时任务 Bean 需要用 @Service 定义
@@ -96,7 +92,7 @@ public class QuartzJobController {
     }
 
     @Log("更改定时任务状态")
-    @ApiOperation("更改定时任务状态")
+
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateQuartzJobStatus(@PathVariable Long id){
         quartzJobService.updateIsPause(quartzJobService.findById(id));
@@ -104,7 +100,7 @@ public class QuartzJobController {
     }
 
     @Log("执行定时任务")
-    @ApiOperation("执行定时任务")
+
     @PutMapping(value = "/exec/{id}")
     public ResponseEntity<Object> executionQuartzJob(@PathVariable Long id){
         quartzJobService.execution(quartzJobService.findById(id));
@@ -112,7 +108,7 @@ public class QuartzJobController {
     }
 
     @Log("删除定时任务")
-    @ApiOperation("删除定时任务")
+
     @DeleteMapping
     public ResponseEntity<Object> deleteQuartzJob(@RequestBody Set<Long> ids){
         quartzJobService.delete(ids);

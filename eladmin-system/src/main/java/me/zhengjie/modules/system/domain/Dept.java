@@ -15,14 +15,16 @@
  */
 package me.zhengjie.modules.system.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import me.zhengjie.base.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import me.zhengjie.hibernate.KuKuSetType;
+import org.hibernate.annotations.CollectionType;
 
 import java.io.Serializable;
 import java.util.List;
@@ -43,33 +45,45 @@ public class Dept extends BaseEntity implements Serializable {
     @Id
     @Column(name = "dept_id")
     @NotNull(groups = Update.class)
-    @ApiModelProperty(value = "ID", hidden = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToMany(mappedBy = "depts")
-    @ApiModelProperty(value = "角色")
+    @CollectionType(type = KuKuSetType.class)
+    @JsonIgnore
     private Set<Role> roles;
 
-    @ApiModelProperty(value = "排序")
+
     private Integer deptSort;
 
     @NotBlank
-    @ApiModelProperty(value = "部门名称")
+
     private String name;
 
     @NotNull
-    @ApiModelProperty(value = "是否启用")
+
     private Boolean enabled;
 
-    @ApiModelProperty(value = "上级部门")
+
     private Long pid;
 
-    @ApiModelProperty(value = "子节点数目", hidden = true)
+
     private Integer subCount = 0;
 
     @Transient
     private List<Dept> children;
+
+    public Boolean getHasChildren() {
+        return subCount > 0;
+    }
+
+    public Boolean getLeaf() {
+        return subCount <= 0;
+    }
+
+    public String getLabel() {
+        return name;
+    }
 
     @Override
     public boolean equals(Object o) {

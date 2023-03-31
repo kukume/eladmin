@@ -16,14 +16,11 @@
 package me.zhengjie.modules.system.rest;
 
 import cn.hutool.core.collection.CollectionUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.exception.BadRequestException;
 import me.zhengjie.modules.system.domain.Dept;
 import me.zhengjie.modules.system.service.DeptService;
-import me.zhengjie.modules.system.service.dto.DeptDto;
 import me.zhengjie.modules.system.service.dto.DeptQueryCriteria;
 import me.zhengjie.utils.PageUtil;
 import org.springframework.http.HttpStatus;
@@ -40,21 +37,21 @@ import java.util.*;
 */
 @RestController
 @RequiredArgsConstructor
-@Api(tags = "系统：部门管理")
+
 @RequestMapping("/api/dept")
 public class DeptController {
 
     private final DeptService deptService;
     private static final String ENTITY_NAME = "dept";
 
-    @ApiOperation("导出部门数据")
+
     @GetMapping(value = "/download")
 
     public void exportDept(HttpServletResponse response, DeptQueryCriteria criteria) throws Exception {
         deptService.download(deptService.queryAll(criteria, false), response);
     }
 
-    @ApiOperation("查询部门")
+
     @GetMapping
 
     public ResponseEntity<Object> queryDept(DeptQueryCriteria criteria) throws Exception {
@@ -62,7 +59,7 @@ public class DeptController {
         return new ResponseEntity<>(PageUtil.toPage(deptDtos, deptDtos.size()),HttpStatus.OK);
     }
 
-    @ApiOperation("查询部门:根据ID获取同级与上级数据")
+
     @PostMapping("/superior")
 
     public ResponseEntity<Object> getDeptSuperior(@RequestBody List<Long> ids) {
@@ -76,7 +73,7 @@ public class DeptController {
     }
 
     @Log("新增部门")
-    @ApiOperation("新增部门")
+
     @PostMapping
 
     public ResponseEntity<Object> createDept(@Validated @RequestBody Dept resources){
@@ -88,7 +85,7 @@ public class DeptController {
     }
 
     @Log("修改部门")
-    @ApiOperation("修改部门")
+
     @PutMapping
 
     public ResponseEntity<Object> updateDept(@Validated(Dept.Update.class) @RequestBody Dept resources){
@@ -97,7 +94,7 @@ public class DeptController {
     }
 
     @Log("删除部门")
-    @ApiOperation("删除部门")
+
     @DeleteMapping
 
     public ResponseEntity<Object> deleteDept(@RequestBody Set<Long> ids){

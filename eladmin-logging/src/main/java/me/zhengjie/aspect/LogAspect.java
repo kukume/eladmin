@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.domain.Log;
 import me.zhengjie.service.LogService;
 import me.zhengjie.utils.RequestHolder;
+import me.zhengjie.utils.SpringUtilsKt;
 import me.zhengjie.utils.ThrowableUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -68,7 +69,7 @@ public class LogAspect {
         Log log = new Log("INFO",System.currentTimeMillis() - currentTime.get());
         currentTime.remove();
         HttpServletRequest request = RequestHolder.getHttpServletRequest();
-        logService.save(getUsername(), "", "", joinPoint, log);
+        logService.save(getUsername(), SpringUtilsKt.userAgent(request), SpringUtilsKt.ip(request), joinPoint, log);
         return result;
     }
 
@@ -84,7 +85,7 @@ public class LogAspect {
         currentTime.remove();
         log.setExceptionDetail(ThrowableUtil.getStackTrace(e).getBytes());
         HttpServletRequest request = RequestHolder.getHttpServletRequest();
-        logService.save(getUsername(), "", "", (ProceedingJoinPoint)joinPoint, log);
+        logService.save(getUsername(), SpringUtilsKt.userAgent(request), SpringUtilsKt.ip(request), (ProceedingJoinPoint)joinPoint, log);
     }
 
     public String getUsername() {

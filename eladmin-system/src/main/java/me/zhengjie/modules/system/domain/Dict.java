@@ -15,7 +15,6 @@
  */
 package me.zhengjie.modules.system.domain;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import me.zhengjie.base.BaseEntity;
@@ -38,7 +37,6 @@ public class Dict extends BaseEntity implements Serializable {
     @Id
     @Column(name = "dict_id")
     @NotNull(groups = Update.class)
-    @ApiModelProperty(value = "ID", hidden = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -46,9 +44,7 @@ public class Dict extends BaseEntity implements Serializable {
     private List<DictDetail> dictDetails;
 
     @NotBlank
-    @ApiModelProperty(value = "名称")
     private String name;
 
-    @ApiModelProperty(value = "描述")
     private String description;
 }

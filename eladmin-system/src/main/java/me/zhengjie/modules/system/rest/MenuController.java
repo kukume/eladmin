@@ -17,8 +17,6 @@ package me.zhengjie.modules.system.rest;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.modules.system.domain.Menu;
@@ -42,14 +40,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@Api(tags = "系统：菜单管理")
+
 @RequestMapping("/api/menus")
 public class MenuController {
 
     private final MenuService menuService;
     private static final String ENTITY_NAME = "menu";
 
-    @ApiOperation("导出菜单数据")
+
     @GetMapping(value = "/download")
 
     public void exportMenu(HttpServletResponse response, MenuQueryCriteria criteria) throws Exception {
@@ -57,21 +55,21 @@ public class MenuController {
     }
 
     @GetMapping(value = "/build")
-    @ApiOperation("获取前端所需菜单")
+
     public ResponseEntity<Object> buildMenus(){
         List<Menu> menuDtoList = menuService.findByUser(StpUtil.getLoginIdAsLong());
         List<Menu> menuDtos = menuService.buildTree(menuDtoList);
         return new ResponseEntity<>(menuService.buildMenus(menuDtos),HttpStatus.OK);
     }
 
-    @ApiOperation("返回全部的菜单")
+
     @GetMapping(value = "/lazy")
 
     public ResponseEntity<Object> queryAllMenu(@RequestParam Long pid){
         return new ResponseEntity<>(menuService.getMenus(pid),HttpStatus.OK);
     }
 
-    @ApiOperation("根据菜单ID返回所有子节点ID，包含自身ID")
+
     @GetMapping(value = "/child")
 
     public ResponseEntity<Object> childMenu(@RequestParam Long id){
@@ -84,14 +82,14 @@ public class MenuController {
     }
 
     @GetMapping
-    @ApiOperation("查询菜单")
+
 
     public ResponseEntity<Object> queryMenu(MenuQueryCriteria criteria) throws Exception {
         List<Menu> menuDtoList = menuService.queryAll(criteria, true);
         return new ResponseEntity<>(PageUtil.toPage(menuDtoList, menuDtoList.size()),HttpStatus.OK);
     }
 
-    @ApiOperation("查询菜单:根据ID获取同级与上级数据")
+
     @PostMapping("/superior")
 
     public ResponseEntity<Object> getMenuSuperior(@RequestBody List<Long> ids) {
@@ -107,7 +105,7 @@ public class MenuController {
     }
 
     @Log("新增菜单")
-    @ApiOperation("新增菜单")
+
     @PostMapping
 
     public ResponseEntity<Object> createMenu(@Validated @RequestBody Menu resources){
@@ -119,7 +117,7 @@ public class MenuController {
     }
 
     @Log("修改菜单")
-    @ApiOperation("修改菜单")
+
     @PutMapping
 
     public ResponseEntity<Object> updateMenu(@Validated(Menu.Update.class) @RequestBody Menu resources){
@@ -128,7 +126,7 @@ public class MenuController {
     }
 
     @Log("删除菜单")
-    @ApiOperation("删除菜单")
+
     @DeleteMapping
 
     public ResponseEntity<Object> deleteMenu(@RequestBody Set<Long> ids){

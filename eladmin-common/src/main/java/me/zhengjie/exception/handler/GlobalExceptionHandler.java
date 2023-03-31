@@ -47,16 +47,6 @@ public class GlobalExceptionHandler {
         return buildResponseEntity(ApiError.error(e.getMessage()));
     }
 
-    /**
-     * BadCredentialsException
-     */
-//    @ExceptionHandler(BadCredentialsException.class)
-//    public ResponseEntity<ApiError> badCredentialsException(BadCredentialsException e){
-//        // 打印堆栈信息
-//        String message = "坏的凭证".equals(e.getMessage()) ? "用户名或密码不正确" : e.getMessage();
-//        log.error(message);
-//        return buildResponseEntity(ApiError.error(message));
-//    }
 
     /**
      * 处理自定义异常

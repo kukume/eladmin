@@ -1,18 +1,29 @@
 package me.zhengjie.modules.security.config
 
+import cn.dev33.satoken.dao.SaTokenDaoRedisJackson
 import cn.dev33.satoken.jwt.StpLogicJwtForSimple
 import cn.dev33.satoken.stp.StpInterface
+import com.fasterxml.jackson.datatype.hibernate6.Hibernate6Module
 import me.zhengjie.modules.system.service.UserService
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
 @Component
-class SaTokenConfig {
+class SaTokenConfig(
+    saTokenDaoRedisJackson: SaTokenDaoRedisJackson,
+//    hibernate5JakartaModule: Hibernate5JakartaModule
+    hibernate6Module: Hibernate6Module
+) {
 
     @Bean
-    fun getStpLogicJwt() = StpLogicJwtForSimple()
+    fun getStpLogicJwt(): StpLogicJwtForSimple {
+        return StpLogicJwtForSimple()
+    }
 
+    init {
+        saTokenDaoRedisJackson.objectMapper.registerModule(hibernate6Module)
+    }
 
 
 }

@@ -17,9 +17,8 @@ package me.zhengjie.modules.system.rest;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import me.kuku.utils.MD5Utils;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.modules.system.domain.Dept;
 import me.zhengjie.modules.system.domain.Role;
@@ -49,7 +48,7 @@ import java.util.stream.Collectors;
  * @author Zheng Jie
  * @date 2018-11-23
  */
-@Api(tags = "系统：用户管理")
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -59,13 +58,13 @@ public class UserController {
     private final DeptService deptService;
     private final RoleService roleService;
 
-    @ApiOperation("导出用户数据")
+
     @GetMapping(value = "/download")
     public void exportUser(HttpServletResponse response, UserQueryCriteria criteria) throws IOException {
         userService.download(userService.queryAll(criteria), response);
     }
 
-    @ApiOperation("查询用户")
+
     @GetMapping
     public ResponseEntity<Object> queryUser(UserQueryCriteria criteria, Pageable pageable){
         if (!ObjectUtils.isEmpty(criteria.getDeptId())) {
@@ -76,7 +75,7 @@ public class UserController {
             criteria.getDeptIds().addAll(deptService.getDeptChildren(data));
         }
         // 数据权限
-        List<Long> dataScopes = dataService.getDeptIds(userService.findByName(StpUtil.getLoginIdAsString()));
+        List<Long> dataScopes = dataService.getDeptIds(userService.findByName(SecurityUtils.getCurrentUsername()));
         // criteria.getDeptIds() 不为空并且数据权限不为空则取交集
         if (!CollectionUtils.isEmpty(criteria.getDeptIds()) && !CollectionUtils.isEmpty(dataScopes)){
             // 取交集
@@ -93,7 +92,7 @@ public class UserController {
     }
 
     @Log("新增用户")
-    @ApiOperation("新增用户")
+
     @PostMapping
     public ResponseEntity<Object> createUser(@Validated @RequestBody User resources){
         checkLevel(resources);
@@ -104,7 +103,7 @@ public class UserController {
     }
 
     @Log("修改用户")
-    @ApiOperation("修改用户")
+
     @PutMapping
     public ResponseEntity<Object> updateUser(@Validated(User.Update.class) @RequestBody User resources) throws Exception {
         checkLevel(resources);
@@ -113,7 +112,7 @@ public class UserController {
     }
 
     @Log("修改用户：个人中心")
-    @ApiOperation("修改用户：个人中心")
+
     @PutMapping(value = "center")
     public ResponseEntity<Object> centerUser(@Validated(User.Update.class) @RequestBody User resources){
         if(!resources.getId().equals(StpUtil.getLoginIdAsLong())){
@@ -124,7 +123,7 @@ public class UserController {
     }
 
     @Log("删除用户")
-    @ApiOperation("删除用户")
+
     @DeleteMapping
     public ResponseEntity<Object> deleteUser(@RequestBody Set<Long> ids){
         for (Long id : ids) {
@@ -138,39 +137,38 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation("修改密码")
+
     @PostMapping(value = "/updatePass")
     public ResponseEntity<Object> updateUserPass(@RequestBody UserPassVo passVo) throws Exception {
-//        String oldPass = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,passVo.getOldPass());
-//        String newPass = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,passVo.getNewPass());
-//        UserDto user = userService.findByName(SecurityUtils.getCurrentUsername());
-//        if(!passwordEncoder.matches(oldPass, user.getPassword())){
-//            throw new BadRequestException("修改失败，旧密码错误");
-//        }
-//        if(passwordEncoder.matches(newPass, user.getPassword())){
-//            throw new BadRequestException("新密码不能与旧密码相同");
-//        }
-//        userService.updatePass(user.getUsername(),passwordEncoder.encode(newPass));
+        User user = userService.findByName(SecurityUtils.getCurrentUsername());
+        String oldPass = MD5Utils.toMD5(passVo.getOldPass() + user.getSalt());
+        String newPass = MD5Utils.toMD5(passVo.getNewPass() + user.getSalt());
+        if(!Objects.equals(oldPass, user.getPassword())){
+            throw new BadRequestException("修改失败，旧密码错误");
+        }
+        if(Objects.equals(oldPass, newPass)){
+            throw new BadRequestException("新密码不能与旧密码相同");
+        }
+        userService.updatePass(user.getUsername(), newPass);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @ApiOperation("修改头像")
+
     @PostMapping(value = "/updateAvatar")
     public ResponseEntity<Object> updateUserAvatar(@RequestParam MultipartFile avatar){
         return new ResponseEntity<>(userService.updateAvatar(avatar), HttpStatus.OK);
     }
 
     @Log("修改邮箱")
-    @ApiOperation("修改邮箱")
+
     @PostMapping(value = "/updateEmail/{code}")
-    public ResponseEntity<Object> updateUserEmail(@PathVariable String code,@RequestBody User user) throws Exception {
-//        String password = RsaUtils.decryptByPrivateKey(RsaProperties.privateKey,user.getPassword());
-//        UserDto userDto = userService.findByName(SecurityUtils.getCurrentUsername());
-//        if(!passwordEncoder.matches(password, userDto.getPassword())){
-//            throw new BadRequestException("密码错误");
-//        }
-//        verificationCodeService.validated(CodeEnum.EMAIL_RESET_EMAIL_CODE.getKey() + user.getEmail(), code);
-//        userService.updateEmail(userDto.getUsername(),user.getEmail());
+    public ResponseEntity<Object> updateUserEmail(@PathVariable String code, @RequestBody User user) throws Exception {
+        String password = MD5Utils.toMD5(user.getPassword() + user.getSalt());
+        User userDto = userService.findByName(SecurityUtils.getCurrentUsername());
+        if(!Objects.equals(password, userDto.getPassword())){
+            throw new BadRequestException("密码错误");
+        }
+        userService.updateEmail(userDto.getUsername(), user.getEmail());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
