@@ -11,6 +11,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ModelAndViewMethodR
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
 import org.springframework.web.servlet.mvc.method.annotation.RequestResponseBodyMethodProcessor
 
+@Suppress("UNCHECKED_CAST")
 class KuKuReturnValueHandler: HandlerMethodReturnValueHandler {
 
     private val requestMappingHandlerAdapter by lazy {

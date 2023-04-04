@@ -17,7 +17,7 @@ class QuerydslController(
     private val jpaQueryFactory: JPAQueryFactory
 ) {
 
-    @PostMapping
+    @PostMapping("/byQuerydsl")
     fun ss(@RequestBody sql: Sql): Any {
         val from = sql.from
         val primary = from.value

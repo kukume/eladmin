@@ -57,7 +57,10 @@ public class ConfigurerAdapter implements WebMvcConfigurer {
     public void addInterceptors(@NotNull InterceptorRegistry registry) {
         String activeProfile = context.getEnvironment().getActiveProfiles()[0];
         if (!Objects.equals(activeProfile, "dev")) {
-            registry.addInterceptor(new SaInterceptor(handle -> StpUtil.checkLogin()))
+            registry.addInterceptor(new SaInterceptor(handle -> {
+                        System.out.println(handle);
+                        StpUtil.checkLogin();
+                    }))
                     .addPathPatterns("/**")
                     .excludePathPatterns("/auth/login");
         }

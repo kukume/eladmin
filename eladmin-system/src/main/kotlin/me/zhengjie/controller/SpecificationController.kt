@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package me.zhengjie.controller
 
 import jakarta.persistence.criteria.CriteriaBuilder
@@ -25,9 +27,33 @@ class GeneralController(
 
     @PostMapping("/bySpecification")
     fun queryBySpecification(@RequestBody dynamicParam: DynamicParam): Any {
-        val sp = Specification<Any> { root, _, criteriaBuilder ->
+        val sp = dynamicParam.toPredicate()
+        val dynamicPageable = dynamicParam.pageable
+        val page = dynamicPageable.page
+        val size = dynamicPageable.size
+        val pageable = PageRequest.of(page, size, dynamicParam.toSort())
+        val name = dynamicParam.name
+        val prefix = name.substring(0, 1).uppercase() + name.substring(1)
+        val repositoryClass = Class.forName("$packageName.pojo.${prefix}Repository")
+        val repository = applicationContext.getBean(repositoryClass)
+        val method =
+            repositoryClass.getMethod("findAll", Specification::class.java, Pageable::class.java)
+        return method.invoke(repository, sp, pageable)
+    }
+
+}
+
+
+class DynamicParam {
+    // entity的名字
+    var name: String = ""
+    var query: List<DynamicQuery> = mutableListOf()
+    var pageable: DynamicPageable = DynamicPageable()
+
+    fun toPredicate(): Specification<Any> {
+        return Specification<Any> { root, _, criteriaBuilder ->
             val predicates = mutableListOf<Predicate>()
-            for (dynamicQuery in dynamicParam.query) {
+            for (dynamicQuery in query) {
                 val field = dynamicQuery.field
                 val fieldList = field.split(".")
                 val firstField = fieldList[0]
@@ -66,10 +92,10 @@ class GeneralController(
             }
             criteriaBuilder.and(*predicates.toTypedArray())
         }
-        val dynamicPageable = dynamicParam.pageable
-        val page = dynamicPageable.page
-        val size = dynamicPageable.size
-        val sortList = dynamicPageable.sort
+    }
+
+    fun toSort(): Sort {
+        val sortList = pageable.sort
         val sortOrderList = mutableListOf<Sort.Order>()
         for (dynamicSort in sortList) {
             val order = dynamicSort.order
@@ -77,45 +103,9 @@ class GeneralController(
             if (order.uppercase() == "asc") sortOrderList.add(Sort.Order.asc(field))
             else if (order.uppercase() == "desc") sortOrderList.add(Sort.Order.desc(field))
         }
-        val pageable = PageRequest.of(page, size, Sort.by(sortOrderList))
-        val name = dynamicParam.name
-        val prefix = name.substring(0, 1).uppercase() + name.substring(1)
-        val repositoryClass = Class.forName("$packageName.pojo.${prefix}Repository")
-        val repository = applicationContext.getBean(repositoryClass)
-        val method =
-            repositoryClass.getMethod("findAll", Specification::class.java, Pageable::class.java)
-        return method.invoke(repository, sp, pageable)
+        return Sort.by(sortOrderList)
     }
 
-    private fun convert(build: CriteriaBuilder, path: Path<*>, text1: String, text2: String): Predicate? {
-        return when (path.javaType) {
-            LocalDate::class.java -> {
-                build.between(path as Expression<LocalDate>,
-                    DateTimeFormatterUtils.parseToLocalDate(text1, "yyyy-MM-dd"),
-                    DateTimeFormatterUtils.parseToLocalDate(text2, "yyyy-MM-dd")
-                )
-            }
-            LocalDateTime::class.java -> {
-                build.between(path as Expression<LocalDateTime>,
-                    DateTimeFormatterUtils.parseToLocalDateTime(text1, "yyyy-MM-dd HH:mm:ss"),
-                    DateTimeFormatterUtils.parseToLocalDateTime(text2, "yyyy-MM-dd HH:mm:ss")
-                )
-            }
-            String::class.java -> {
-                build.between(path as Expression<String>, text1, text2)
-            }
-            else -> null
-        }
-    }
-
-}
-
-
-class DynamicParam {
-    // entity的名字
-    var name: String = ""
-    var query: List<DynamicQuery> = mutableListOf()
-    var pageable: DynamicPageable = DynamicPageable()
 }
 
 class DynamicQuery {
@@ -136,4 +126,26 @@ class DynamicPageable {
     var page: Int = 0
     var size: Int = 20
     var sort: List<DynamicSort> = mutableListOf()
+}
+
+
+private fun convert(build: CriteriaBuilder, path: Path<*>, text1: String, text2: String): Predicate? {
+    return when (path.javaType) {
+        LocalDate::class.java -> {
+            build.between(path as Expression<LocalDate>,
+                DateTimeFormatterUtils.parseToLocalDate(text1, "yyyy-MM-dd"),
+                DateTimeFormatterUtils.parseToLocalDate(text2, "yyyy-MM-dd")
+            )
+        }
+        LocalDateTime::class.java -> {
+            build.between(path as Expression<LocalDateTime>,
+                DateTimeFormatterUtils.parseToLocalDateTime(text1, "yyyy-MM-dd HH:mm:ss"),
+                DateTimeFormatterUtils.parseToLocalDateTime(text2, "yyyy-MM-dd HH:mm:ss")
+            )
+        }
+        String::class.java -> {
+            build.between(path as Expression<String>, text1, text2)
+        }
+        else -> null
+    }
 }

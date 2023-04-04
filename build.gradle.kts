@@ -54,6 +54,7 @@ subprojects {
         implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
         implementation("org.netbeans.external:com-jcraft-jsch:RELEASE170")
         implementation("org.springframework.boot:spring-boot-starter-validation")
+        implementation("org.apache.poi:poi-ooxml:5.2.3")
         kapt("com.querydsl:querydsl-apt:5.0.0:jakarta")
         kapt("org.springframework.boot:spring-boot-configuration-processor")
         kapt("com.squareup.moshi:moshi-kotlin-codegen:1.14.0")
