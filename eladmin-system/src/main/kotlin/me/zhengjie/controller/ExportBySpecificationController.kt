@@ -18,7 +18,7 @@ class ExportController(
 
     private val packageName = "me.kuku.test"
 
-    @PostMapping("/export")
+    @PostMapping("/export/bySpecification")
     fun export(@RequestBody param: ExportParam, response: HttpServletResponse) {
         val dynamicParam = param.dynamicParam
         val sp = dynamicParam.toPredicate()
