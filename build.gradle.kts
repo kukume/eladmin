@@ -1,9 +1,9 @@
 plugins {
-    val kotlinVersion = "1.8.10"
+    val kotlinVersion = "1.8.20"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     id("org.jetbrains.kotlin.kapt") version kotlinVersion
-    id("org.springframework.boot") version "3.0.4"
+    id("org.springframework.boot") version "3.0.5"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("plugin.lombok") version kotlinVersion
     id("io.freefair.lombok") version "6.4.0"
