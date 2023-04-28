@@ -62,7 +62,7 @@ subprojects {
         kapt("com.google.dagger:dagger-compiler:2.45")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
 //        implementation("com.h2database:h2:2.1.214")
-        implementation("com.mysql:mysql-connector-j:8.0.32")
+        implementation("com.mysql:mysql-connector-j:8.0.33")
 //        implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate5-jakarta")
         implementation("com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.15.0-rc1")
     }

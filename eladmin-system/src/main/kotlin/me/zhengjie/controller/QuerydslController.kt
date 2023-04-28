@@ -10,9 +10,11 @@ import com.querydsl.jpa.impl.JPAQuery
 import com.querydsl.jpa.impl.JPAQueryFactory
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@RequestMapping("/api")
 class QuerydslController(
     private val jpaQueryFactory: JPAQueryFactory
 ) {
@@ -146,11 +148,16 @@ class OrderBy {
 }
 
 // 实体类的包名
-val prefix = "me.kuku.test.pojo"
+val qEntityPackages = listOf("me.zhengjie.modules.system.domain")
 
 fun qEntity(str: String): EntityPathBase<*> {
-    return Class.forName("$prefix.Q${firstUpper(str)}")
-        .getDeclaredField(firstLower(str)).get(null) as EntityPathBase<*>
+    for (qPrefix in qEntityPackages) {
+        runCatching {
+            return Class.forName("$qPrefix.Q${firstUpper(str)}")
+                .getDeclaredField(firstLower(str)).get(null) as EntityPathBase<*>
+        }
+    }
+    error("没有找到q类")
 }
 
 fun firstUpper(str: String): String {

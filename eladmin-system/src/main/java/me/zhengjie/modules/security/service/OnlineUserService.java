@@ -4,6 +4,7 @@ import cn.dev33.satoken.config.SaTokenConfig;
 import kotlin.text.StringsKt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.kuku.utils.Jackson;
 import me.kuku.utils.StringUtils;
 import me.zhengjie.modules.security.service.dto.OnlineUserDto;
 import me.zhengjie.modules.system.domain.User;
@@ -64,7 +65,7 @@ public class OnlineUserService {
         Collections.reverse(keys);
         List<OnlineUserDto> onlineUserDtos = new ArrayList<>();
         for (String key : keys) {
-            OnlineUserDto onlineUserDto = (OnlineUserDto) redisUtils.get(key);
+            OnlineUserDto onlineUserDto = Jackson.parseObject(Jackson.toJsonString(redisUtils.get(key)), OnlineUserDto.class);
             if(!StringUtils.isEmpty(filter)){
                 if(onlineUserDto.toString().contains(filter)){
                     onlineUserDtos.add(onlineUserDto);

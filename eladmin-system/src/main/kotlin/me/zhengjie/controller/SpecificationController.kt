@@ -14,16 +14,16 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @RestController
+@RequestMapping("/api")
 class GeneralController(
     private val applicationContext: ApplicationContext
 ) {
-
-    private val packageName = "me.kuku.test"
 
     @PostMapping("/bySpecification")
     fun queryBySpecification(@RequestBody dynamicParam: DynamicParam): Any {
@@ -34,7 +34,7 @@ class GeneralController(
         val pageable = PageRequest.of(page, size, dynamicParam.toSort())
         val name = dynamicParam.name
         val prefix = name.substring(0, 1).uppercase() + name.substring(1)
-        val repositoryClass = Class.forName("$packageName.pojo.${prefix}Repository")
+        val repositoryClass = repositoryClass(prefix)
         val repository = applicationContext.getBean(repositoryClass)
         val method =
             repositoryClass.getMethod("findAll", Specification::class.java, Pageable::class.java)
@@ -148,4 +148,15 @@ private fun convert(build: CriteriaBuilder, path: Path<*>, text1: String, text2:
         }
         else -> null
     }
+}
+
+private val repositoryPackageNames = listOf("me.zhengjie.modules.system.repository")
+
+fun repositoryClass(prefix: String): Class<*> {
+    for (repositoryPackageName in repositoryPackageNames) {
+        runCatching {
+            return Class.forName("$repositoryPackageName.${prefix}Repository")
+        }
+    }
+    error("找不到repository")
 }

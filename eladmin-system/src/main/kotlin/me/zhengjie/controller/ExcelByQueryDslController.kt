@@ -6,11 +6,13 @@ import jakarta.servlet.http.HttpServletResponse
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.nio.charset.StandardCharsets
 import java.util.*
 
 @RestController
+@RequestMapping("/api")
 class ExcelByQueryDslController(
     private val jpaQueryFactory: JPAQueryFactory
 ) {

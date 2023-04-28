@@ -2,8 +2,6 @@ server:
   port: 8000
 
 spring:
-  freemarker:
-    check-template-location: false
   profiles:
     active: dev
   jackson:

@@ -7,16 +7,16 @@ import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.nio.charset.StandardCharsets
 import java.util.Objects
 
 @RestController
+@RequestMapping("/api")
 class ExportController(
     private val applicationContext: ApplicationContext
 ) {
-
-    private val packageName = "me.kuku.test"
 
     @PostMapping("/export/bySpecification")
     fun export(@RequestBody param: ExportParam, response: HttpServletResponse) {
@@ -25,7 +25,7 @@ class ExportController(
         val sort = dynamicParam.toSort()
         val name = dynamicParam.name
         val prefix = name.substring(0, 1).uppercase() + name.substring(1)
-        val repositoryClass = Class.forName("$packageName.pojo.${prefix}Repository")
+        val repositoryClass = repositoryClass(prefix)
         val repository = applicationContext.getBean(repositoryClass)
         val method =
             repositoryClass.getMethod("findAll", Specification::class.java, Sort::class.java)
